@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Reproducible full-corpus SciFact embedding migration + real HTTP inference.
-Run: ../.venv/bin/python run_public.py --uri http://localhost:19530
+Run: .venv/bin/python run_public.py --uri http://localhost:19530
 """
 import argparse, csv, hashlib, json, math, os, platform, shutil, statistics, threading, time, traceback, urllib.request, zipfile
 from collections import defaultdict
@@ -44,7 +44,7 @@ class Lab:
     def __init__(self,uri,port,cache):
         self.uri,self.port,self.cache=uri,port,cache
         self.run=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
-        self.out=ROOT/'artifacts'/self.run;self.out.mkdir()
+        self.out=ROOT/'artifacts'/self.run;self.out.mkdir(parents=True)
         shutil.copyfile(__file__,self.out/'run_public.py')
         self.name='scifact_switch_'+self.run.lower()
         self.c=MilvusClient(uri=uri,timeout=60)

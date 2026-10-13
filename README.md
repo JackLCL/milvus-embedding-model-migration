@@ -2,7 +2,7 @@
 
 An end-to-end SciFact experiment that migrates from **BAAI/bge-small-en-v1.5 (384 dimensions)** to **BAAI/bge-base-en-v1.5 (768 dimensions)** while retaining the old retrieval version during backfill, evaluation, and the rollback window.
 
-[Read the article](ARTICLE.md) · [Recorded results](RESULTS.md) · [Data and model sources](THIRD_PARTY_NOTICES.md)
+[Read the article](ARTICLE.md) · [Recorded results](RESULTS.md) · [Data and model sources](THIRD_PARTY_NOTICES.md) · [Execution validation](VALIDATION.md)
 
 ![Embedding model migration workflow](diagrams/overview.svg)
 
