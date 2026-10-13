@@ -1,0 +1,45 @@
+{
+  "dataset": "BEIR / SciFact",
+  "documents": 5183,
+  "test_queries": 300,
+  "models": {
+    "A": {
+      "name": "BAAI/bge-small-en-v1.5",
+      "dimension": 384
+    },
+    "B": {
+      "name": "BAAI/bge-base-en-v1.5",
+      "dimension": 768
+    }
+  },
+  "metrics": {
+    "recall_at_10": {
+      "before": 0.8362222222222222,
+      "after": 0.8742222222222222,
+      "absolute_delta": 0.038000000000000034,
+      "relative_change_percent": 4.544246611745952
+    },
+    "ndcg_at_10": {
+      "before": 0.7127069247605036,
+      "after": 0.7427062791935646,
+      "absolute_delta": 0.02999935443306101,
+      "relative_change_percent": 4.209213267170362
+    }
+  },
+  "query_outcomes": {
+    "recall_at_10": {
+      "improved": 19,
+      "unchanged": 274,
+      "declined": 7
+    },
+    "ndcg_at_10": {
+      "improved": 65,
+      "unchanged": 196,
+      "declined": 39
+    }
+  },
+  "source_files": [
+    "recorded-results/retrieval_A.json",
+    "recorded-results/retrieval_B.json"
+  ]
+}

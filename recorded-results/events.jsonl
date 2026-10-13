@@ -1,0 +1,65 @@
+{"elapsed_s": 0.001, "event": "check", "name": "server_is_3_0_2", "passed": true}
+{"elapsed_s": 0.113, "event": "check", "name": "full_scifact_test", "passed": true, "documents": 5183, "queries": 300}
+{"elapsed_s": 5.025, "event": "stage", "name": "ingest_A"}
+{"elapsed_s": 7.941, "event": "ingested", "rows": 32}
+{"elapsed_s": 31.664, "event": "ingested", "rows": 352}
+{"elapsed_s": 54.807, "event": "ingested", "rows": 672}
+{"elapsed_s": 77.267, "event": "ingested", "rows": 992}
+{"elapsed_s": 100.168, "event": "ingested", "rows": 1312}
+{"elapsed_s": 122.835, "event": "ingested", "rows": 1632}
+{"elapsed_s": 145.769, "event": "ingested", "rows": 1952}
+{"elapsed_s": 169.106, "event": "ingested", "rows": 2272}
+{"elapsed_s": 192.111, "event": "ingested", "rows": 2592}
+{"elapsed_s": 215.109, "event": "ingested", "rows": 2912}
+{"elapsed_s": 237.921, "event": "ingested", "rows": 3232}
+{"elapsed_s": 260.763, "event": "ingested", "rows": 3552}
+{"elapsed_s": 284.121, "event": "ingested", "rows": 3872}
+{"elapsed_s": 306.803, "event": "ingested", "rows": 4192}
+{"elapsed_s": 329.643, "event": "ingested", "rows": 4512}
+{"elapsed_s": 352.805, "event": "ingested", "rows": 4832}
+{"elapsed_s": 376.026, "event": "ingested", "rows": 5152}
+{"elapsed_s": 383.803, "event": "evaluation", "version": "A", "queries": 300, "recall_at_10": 0.8362222222222222, "ndcg_at_10": 0.7127069247605036}
+{"elapsed_s": 383.805, "event": "stage", "name": "baseline_A"}
+{"elapsed_s": 388.825, "event": "stage", "name": "add_B"}
+{"elapsed_s": 395.022, "event": "check", "name": "old_and_new_dimensions", "passed": true}
+{"elapsed_s": 395.022, "event": "stage", "name": "backfill_B_from_milvus_text"}
+{"elapsed_s": 415.119, "event": "check", "name": "NULL_B_rows_excluded", "passed": true}
+{"elapsed_s": 470.675, "event": "backfilled_from_milvus", "rows": 320}
+{"elapsed_s": 532.352, "event": "backfilled_from_milvus", "rows": 640}
+{"elapsed_s": 593.898, "event": "backfilled_from_milvus", "rows": 960}
+{"elapsed_s": 656.207, "event": "backfilled_from_milvus", "rows": 1280}
+{"elapsed_s": 718.412, "event": "backfilled_from_milvus", "rows": 1600}
+{"elapsed_s": 779.721, "event": "backfilled_from_milvus", "rows": 1920}
+{"elapsed_s": 841.375, "event": "backfilled_from_milvus", "rows": 2240}
+{"elapsed_s": 902.95, "event": "backfilled_from_milvus", "rows": 2560}
+{"elapsed_s": 963.419, "event": "backfilled_from_milvus", "rows": 2880}
+{"elapsed_s": 1024.571, "event": "backfilled_from_milvus", "rows": 3200}
+{"elapsed_s": 1085.986, "event": "backfilled_from_milvus", "rows": 3520}
+{"elapsed_s": 1147.531, "event": "backfilled_from_milvus", "rows": 3840}
+{"elapsed_s": 1207.814, "event": "backfilled_from_milvus", "rows": 4160}
+{"elapsed_s": 1268.997, "event": "backfilled_from_milvus", "rows": 4480}
+{"elapsed_s": 1329.878, "event": "backfilled_from_milvus", "rows": 4800}
+{"elapsed_s": 1390.891, "event": "backfilled_from_milvus", "rows": 5120}
+{"elapsed_s": 1402.937, "event": "backfilled_from_milvus", "rows": 5183}
+{"elapsed_s": 1402.94, "event": "check", "name": "all_documents_backfilled", "passed": true}
+{"elapsed_s": 1402.94, "event": "stage", "name": "audit_and_evaluate_B"}
+{"elapsed_s": 1414.999, "event": "B_index_ready", "description": {"M": "16", "efConstruction": "100", "metric_type": "COSINE", "index_type": "HNSW", "field_name": "vector_b", "index_name": "vector_b_hnsw", "total_rows": 10334, "indexed_rows": 10334, "pending_index_rows": 0, "state": "Finished"}}
+{"elapsed_s": 1417.173, "event": "check", "name": "all_texts_and_vectors_audited", "passed": true, "rows": 5183, "max_error": {"A": 0.0, "B": 0.0}}
+{"elapsed_s": 1421.632, "event": "evaluation", "version": "B", "queries": 300, "recall_at_10": 0.8742222222222222, "ndcg_at_10": 0.7427062791935646}
+{"elapsed_s": 1430.67, "event": "check", "name": "wrong_dimension_rejected", "passed": true, "message": "<MilvusException: (code=2000, message=failed to search: failed to search/query delegator 1 for channel by-dev-rootcoord-dml_13_469271701364567204v0: fail to search on QueryNode 1: worker(1) query failed: parser searchRequest failed:  => vector dimension mismatch, expected vector size(byte) 3072, actual 1536. at ../internal/core/src/query/Plan.cpp:183\n: segcore error[segcoreCode=2001])>"}
+{"elapsed_s": 1430.67, "event": "stage", "name": "canary_AB"}
+{"elapsed_s": 1431.522, "event": "check", "name": "canary_routing", "passed": true, "B_requests": 6}
+{"elapsed_s": 1431.522, "event": "stage", "name": "cutover_B"}
+{"elapsed_s": 1436.713, "event": "stage", "name": "rollback_A"}
+{"elapsed_s": 1441.736, "event": "check", "name": "A_latest_update_searchable", "passed": true}
+{"elapsed_s": 1441.788, "event": "check", "name": "B_latest_update_searchable", "passed": true}
+{"elapsed_s": 1441.796, "event": "check", "name": "probe_deleted", "passed": true}
+{"elapsed_s": 1441.796, "event": "stage", "name": "final_B"}
+{"elapsed_s": 1447.798, "event": "stage", "name": "drop_A"}
+{"elapsed_s": 1447.815, "event": "check", "name": "old_field_and_index_removed", "passed": true}
+{"elapsed_s": 1447.864, "event": "check", "name": "B_only_write", "passed": true}
+{"elapsed_s": 1447.867, "event": "stage", "name": "after_cleanup"}
+{"elapsed_s": 1452.872, "event": "check", "name": "final_count", "passed": true}
+{"elapsed_s": 1457.291, "event": "evaluation", "version": "B", "queries": 300, "recall_at_10": 0.8742222222222222, "ndcg_at_10": 0.7427062791935646}
+{"elapsed_s": 1457.294, "event": "check", "name": "cleanup_preserves_retrieval", "passed": true}
+{"elapsed_s": 1457.56, "event": "finished", "success": true, "output": "./artifacts/20261001T022531Z"}

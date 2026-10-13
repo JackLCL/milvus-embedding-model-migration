@@ -1,0 +1,78 @@
+{
+  "version": "A",
+  "model": "BAAI/bge-small-en-v1.5",
+  "field": "vector_a",
+  "dimension": 384,
+  "hits": [
+    {
+      "id": "4346436",
+      "distance": 0.7027339935302734,
+      "entity": {
+        "title": "Nonlinear Elasticity in Biological Gels"
+      }
+    },
+    {
+      "id": "17388232",
+      "distance": 0.6935744285583496,
+      "entity": {
+        "title": "Mechanical regulation of cell function with geometrically modulated elastomeric substrates"
+      }
+    },
+    {
+      "id": "29638116",
+      "distance": 0.6831773519515991,
+      "entity": {
+        "title": "Complex Tissue and Disease Modeling using hiPSCs."
+      }
+    },
+    {
+      "id": "7583104",
+      "distance": 0.6654934883117676,
+      "entity": {
+        "title": "IDEAL in meshes for prolapse, urinary incontinence, and hernia repair."
+      }
+    },
+    {
+      "id": "21456232",
+      "distance": 0.6585867404937744,
+      "entity": {
+        "title": "A graphene-based platform for induced pluripotent stem cells culture and differentiation."
+      }
+    },
+    {
+      "id": "33986200",
+      "distance": 0.6561410427093506,
+      "entity": {
+        "title": "Layered hydrogels accelerate iPSC-derived neuronal maturation and reveal migration defects caused by MeCP2 dysfunction."
+      }
+    },
+    {
+      "id": "14103509",
+      "distance": 0.6547228097915649,
+      "entity": {
+        "title": "Mechanistic Fracture Criteria For The Failure Of Human Cortical Bone"
+      }
+    },
+    {
+      "id": "927561",
+      "distance": 0.6521680355072021,
+      "entity": {
+        "title": "Emergent structures and dynamics of cell colonies by contact inhibition of locomotion"
+      }
+    },
+    {
+      "id": "6308416",
+      "distance": 0.6512640118598938,
+      "entity": {
+        "title": "Role of boundary conditions in an experimental model of epithelial wound healing."
+      }
+    },
+    {
+      "id": "15337254",
+      "distance": 0.6469643712043762,
+      "entity": {
+        "title": "Geometric cues for directing the differentiation of mesenchymal stem cells."
+      }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": "B",
+  "model": "BAAI/bge-base-en-v1.5",
+  "field": "vector_b",
+  "dimension": 768,
+  "hits": [
+    {
+      "id": "14103509",
+      "distance": 0.5805861353874207,
+      "entity": {
+        "title": "Mechanistic Fracture Criteria For The Failure Of Human Cortical Bone"
+      }
+    },
+    {
+      "id": "21456232",
+      "distance": 0.5769720673561096,
+      "entity": {
+        "title": "A graphene-based platform for induced pluripotent stem cells culture and differentiation."
+      }
+    },
+    {
+      "id": "4346436",
+      "distance": 0.5697023868560791,
+      "entity": {
+        "title": "Nonlinear Elasticity in Biological Gels"
+      }
+    },
+    {
+      "id": "23763738",
+      "distance": 0.5636160373687744,
+      "entity": {
+        "title": "New colorimetric cytotoxicity assay for anticancer-drug screening."
+      }
+    },
+    {
+      "id": "10982689",
+      "distance": 0.561394989490509,
+      "entity": {
+        "title": "Nanotoxicology: An Emerging Discipline Evolving from Studies of Ultrafine Particles"
+      }
+    },
+    {
+      "id": "7583104",
+      "distance": 0.5515363216400146,
+      "entity": {
+        "title": "IDEAL in meshes for prolapse, urinary incontinence, and hernia repair."
+      }
+    },
+    {
+      "id": "25950264",
+      "distance": 0.5501385927200317,
+      "entity": {
+        "title": "A three-dimensional cell biology model of human hepatocellular carcinoma in vitro"
+      }
+    },
+    {
+      "id": "9629682",
+      "distance": 0.5493070483207703,
+      "entity": {
+        "title": "A Whole Brain Staining, Embedding, and Clearing Pipeline for Adult Zebrafish to Visualize Cell Proliferation and Morphology in 3-Dimensions"
+      }
+    },
+    {
+      "id": "20101846",
+      "distance": 0.5481444001197815,
+      "entity": {
+        "title": "Homogeneously dispersed multimetal oxygen-evolving catalysts"
+      }
+    },
+    {
+      "id": "23897346",
+      "distance": 0.5461362600326538,
+      "entity": {
+        "title": "Bayesian models leveraging bioactivity and cytotoxicity information for drug discovery."
+      }
+    }
+  ]
+}

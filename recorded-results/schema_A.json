@@ -1,0 +1,61 @@
+{
+  "collection_name": "scifact_switch_20261001t022531z",
+  "auto_id": false,
+  "num_shards": 1,
+  "description": "",
+  "fields": [
+    {
+      "field_id": 100,
+      "name": "id",
+      "description": "",
+      "type": 21,
+      "params": {
+        "max_length": 64
+      },
+      "is_primary": true
+    },
+    {
+      "field_id": 101,
+      "name": "title",
+      "description": "",
+      "type": 21,
+      "params": {
+        "max_length": 2048
+      }
+    },
+    {
+      "field_id": 102,
+      "name": "text",
+      "description": "",
+      "type": 21,
+      "params": {
+        "max_length": 65535
+      }
+    },
+    {
+      "field_id": 103,
+      "name": "vector_a",
+      "description": "",
+      "type": 101,
+      "params": {
+        "dim": 384
+      }
+    }
+  ],
+  "functions": [],
+  "aliases": [],
+  "collection_id": 469271701364567204,
+  "consistency_level": 0,
+  "consistency_level_name": "Strong",
+  "properties": {
+    "timezone": "UTC",
+    "namespace.sharding.enabled": "false",
+    "max_field_id": "103"
+  },
+  "num_partitions": 1,
+  "enable_dynamic_field": false,
+  "enable_namespace": false,
+  "schema_version": 0,
+  "created_timestamp": 469453120749961234,
+  "update_timestamp": 469453120749961234
+}
