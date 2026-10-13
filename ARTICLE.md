@@ -23,9 +23,9 @@ Each document's title and abstract are joined into one text chunk and stored as 
 
 <p align="center"><em>Table 1. Models and vector dimensions before and after migration.</em></p>
 
-Both models support CPU inference, and their different output dimensions demonstrate migration across vector sizes. Choose a model using evaluations on your own workload. Other models may require different vector dimensions, preprocessing, and index settings.
+The experiment uses FastEmbed 0.7.4 with quantized ONNX models on CPU. The different output dimensions demonstrate migration across vector sizes; model selection should be based on evaluation of your own workload.
 
-Prepare a reachable Milvus 3.0.2 instance, clone or download this repository, and run the following commands. The example uses `localhost:19530`; change `--uri` to connect to another instance.
+Prepare a reachable Milvus 3.0.2 instance, clone or download this repository, and run the following commands to execute the complete experiment. Subsequent snippets explain each stage and do not need to be run again afterward. Change `--uri` to connect to another instance.
 
 ```shell
 uv venv --python 3.12 .venv
@@ -34,7 +34,7 @@ HF_HUB_DISABLE_XET=1 .venv/bin/python run_public.py \
   --uri http://localhost:19530 --model-cache ./models
 ```
 
-The script downloads SciFact, creates a separate collection with a timestamp in its name, and runs ingestion, backfill, evaluation, cutover, and rollback. Use the repository's Docker Compose configuration to start a new Milvus 3.0.2 instance, or pass the address of an existing instance.
+The script downloads the dataset and completes the migration in a separate test collection. Use the repository's Docker Compose configuration to deploy a new instance.
 
 Initialize the client and the two FastEmbed models. In the code, `model_a`, `vector_a`, and route value `"A"` refer to BGE-small-en-v1.5; `model_b`, `vector_b`, and route value `"B"` refer to BGE-base-en-v1.5. Subsequent snippets share this `client` and collection `name`.
 
@@ -104,7 +104,7 @@ create_vector_index("vector_a")
 client.load_collection(name)
 ```
 
-BGE-small-en-v1.5 and `vector_a` now provide the existing retrieval service. Queries continue using this configuration while the new field is added, populated, and evaluated.
+The existing model can now serve queries. Requests continue using this configuration while the new vectors are prepared.
 
 ## Step 2: Add a vector field for the new model
 
@@ -126,11 +126,7 @@ The added field must use `nullable=True` to represent historical records that do
 
 ## Step 3: Re-embed the documents with the new model
 
-Use BGE-base-en-v1.5 to re-encode historical documents and write the results to `vector_b`. Reading the stored `text` field preserves the source text, chunk boundaries, and primary-key mapping. Keep `vector_a` available for the existing retrieval service.
-
-If the collection does not store source text, retrieve it from object storage or a business database and associate it with records by primary key. Old vectors are not a reliable source from which to reconstruct the original text for re-embedding.
-
-The following code uses a Query Iterator to read `id` and `text` in batches, generates new embeddings, and performs partial updates by primary key. `partial_update=True` preserves fields omitted from the update, including the title, source text, and old vectors.
+Read source text from the Milvus `text` field in batches, generate embeddings with BGE-base-en-v1.5, and write them to `vector_b` by primary key. `partial_update=True` preserves omitted fields, including titles, source text, and old vectors. If the source text is stored elsewhere, retrieve and associate it by primary key:
 
 ```python
 iterator = client.query_iterator(
@@ -159,21 +155,34 @@ finally:
     iterator.close()
 ```
 
-This experiment uses a fixed public corpus and does not modify documents during backfill. A production knowledge base with ongoing inserts, updates, and deletes must maintain both vector representations and coordinate backfill with incremental changes through source versions or per-key write ordering. Otherwise, stale backfill can overwrite newer embeddings or recreate deleted records. Partial updates do not replace application-level management of content versions and deletion events.
+This experiment uses a fixed corpus. For a knowledge base with ongoing inserts, updates, and deletes, coordinate source versions and write ordering between backfill and incremental changes. This prevents embeddings generated from older text from overwriting newer vectors or recreating deleted records.
 
 ## Step 4: Check the backfill and compare retrieval quality
 
-Before routing traffic to the new model, confirm that historical backfill is complete, the index has finished building, the target field is loaded, and actual searches succeed. If the source changes during migration, incremental synchronization must also be complete. The following code refreshes the loaded data and inspects the index; the complete script additionally checks the source text and vectors for every record.
+Before shifting traffic, confirm that historical backfill and any incremental synchronization are complete, the new index is built, the field is loaded, and actual searches succeed. The complete script also checks source text and vectors record by record. Keep using the old model if any check fails.
 
 ```python
+import time
+
 client.flush(name)
 client.refresh_load(name)
-print(client.describe_index(name, "vector_b_hnsw"))
+
+deadline = time.monotonic() + 180
+while True:
+    state = client.describe_index(name, "vector_b_hnsw")
+    if (
+        state.get("state") == "Finished"
+        and state.get("pending_index_rows", 0) == 0
+    ):
+        break
+    if time.monotonic() > deadline:
+        raise TimeoutError(str(state))
+    time.sleep(1)
 ```
 
-The first-batch search check confirms that populated records can be retrieved and records with a NULL vector are excluded from searches on that field. Query dimensions must match the target: 384 for `vector_a` and 768 for `vector_b`.
+The first-batch search check confirms that populated records can be retrieved and records with a NULL vector are excluded from searches on that field.
 
-Once the data and index are ready, compare the models on the same corpus and query set. Proceed to canary traffic only after data integrity, loading, and quality requirements are met. Otherwise, keep serving with BGE-small-en-v1.5.
+After these checks pass, compare retrieval quality on the same corpus and query set.
 
 The experiment evaluates all 300 SciFact test queries using Recall@10 and nDCG@10. Recall@10 measures the fraction of relevant documents retrieved in the top 10; nDCG@10 also accounts for their ranking positions. Both metrics are averaged across queries.
 
@@ -237,7 +246,7 @@ def search(question, version):
     )
 ```
 
-The complete script exposes an HTTP search endpoint that accepts query text, generates embeddings, and calls Milvus. The following request selects BGE-base-en-v1.5 with `version="B"`:
+The following commands illustrate the experiment HTTP API; `version="B"` selects BGE-base-en-v1.5. The automated experiment controls routing, so these commands do not need to be executed manually:
 
 ```shell
 curl http://localhost:8080/search \
@@ -245,9 +254,9 @@ curl http://localhost:8080/search \
   -d '{"query":"0-dimensional biomaterials show inductive properties.","version":"B"}'
 ```
 
-The experiment sends 30 mixed-version requests: 6 use BGE-base-en-v1.5 and 24 use BGE-small-en-v1.5. Each request is checked for the correct model and vector field. This validates routing behavior; business impact still requires a controlled experiment with real traffic.
+The experiment validates mixed-version routing with 30 requests: 6 use the new model and 24 use the old model. This check is not a real-user evaluation of business impact.
 
-In production, assign traffic consistently by user, tenant, or session and monitor retrieval quality, latency, and errors. Once canary validation is complete, switch the default version:
+In production, assign traffic consistently by user, tenant, or session. After canary validation, switch the default retrieval version:
 
 ```shell
 curl http://localhost:8080/route \
@@ -265,9 +274,9 @@ The HTTP server is a local experiment service, binds to loopback, and stops when
 
 ## Step 6: Drop the vector field that is no longer needed
 
-Delete the old field only after the observation period ends and rollback to BGE-small-en-v1.5 is no longer required. Once the field is removed, the service retains only the BGE-base-en-v1.5 retrieval path; changing the route alone can no longer restore the old version.
+After the observation period, confirm that rollback is no longer needed, route all requests to the new model, stop old-vector writes, and wait for old-version requests to finish before dropping `vector_a`. Once it is deleted, changing the route alone cannot restore the old retrieval version.
 
-Route all requests to BGE-base-en-v1.5, stop old-model vector writes, and wait for in-flight old-model requests to finish before dropping `vector_a`:
+This experiment uses low-concurrency requests and a fixed observation interval. Production deployments should use request accounting or a draining mechanism to confirm that old-version requests have completed.
 
 ```python
 client.drop_collection_field(name, field_name="vector_a")
@@ -277,7 +286,7 @@ print(client.list_indexes(name))
 
 In this experiment, dropping `vector_a` also removes its associated index. The primary key, title, source text, and `vector_b` remain available. New records containing only BGE-base-en-v1.5 vectors can still be inserted and searched. Physical object-storage space is reclaimed later by background processes.
 
-The two-field approach separates historical re-embedding from traffic cutover: backfill and evaluation run while the old version serves queries, and the application switches once the new version is ready. During migration, account for the extra inference work and the storage and runtime resources needed for both vector fields and indexes.
+During migration, reserve resources for both vector fields and indexes, and account for the additional model inference cost.
 
 ## Summary
 
