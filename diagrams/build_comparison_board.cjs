@@ -6,10 +6,10 @@ function rect(id,x,y,w,h,fill){nodes.push({id,type:'composite_shape',x,y,width:w
 function text(id,x,y,w,s,size=20,bold=false,color=C.ink,align='left'){nodes.push({id,type:'text_shape',x,y,width:w,height:Math.ceil(size*1.8),z_index:100+z++,text:{text:s,font_size:size,font_weight:bold?'bold':'regular',text_color:color,horizontal_align:align,vertical_align:'mid'},style:{fill_opacity:0,border_style:'none'}})}
 function line(id,x1,y1,x2,y2){nodes.push({id,type:'connector',x:Math.min(x1,x2),y:Math.min(y1,y2),width:Math.abs(x2-x1),height:Math.abs(y2-y1),z_index:40,style:{border_color:C.line,border_width:'narrow',border_style:'solid'},connector:{shape:'straight',start:{position:{x:x1,y:y1},arrow_style:'none'},end:{position:{x:x2,y:y2},arrow_style:'none'}}})}
 rect('canvas',0,0,1120,574,C.white);
-text('title',48,24,1024,'Embedding 模型替换前后的检索效果',32,true);
-text('conditions',48,83,1024,'SciFact · 5,183 篇文献 · 300 条测试查询 · 指标越高越好',20,false,C.muted);
-rect('legendA',48,142,20,20,C.blue);text('legendAt',80,130,420,'bge-small-en-v1.5 · 384 维',20,false,C.blue);
-rect('legendB',584,142,20,20,C.green);text('legendBt',616,130,420,'bge-base-en-v1.5 · 768 维',20,false,C.green);
+text('title',48,24,1024,'Retrieval quality before and after migration',32,true);
+text('conditions',48,83,1024,'SciFact · 5,183 documents · 300 test queries · Higher is better',20,false,C.muted);
+rect('legendA',48,142,20,20,C.blue);text('legendAt',80,130,420,'bge-small-en-v1.5 · 384 dims',20,false,C.blue);
+rect('legendB',584,142,20,20,C.green);text('legendBt',616,130,420,'bge-base-en-v1.5 · 768 dims',20,false,C.green);
 const panels=[['recall_at_10','Recall@10',48],['ndcg_at_10','nDCG@10',584]];
 for(const [key,title,x] of panels){
  const m=data.metrics[key],barX=x+124,barW=274;
@@ -21,14 +21,14 @@ for(const [key,title,x] of panels){
  }
  line(key+'axis',barX,408,barX+barW,408);
  for(const tick of [0,.5,1]){const tx=barX+tick*barW;line(key+'tick'+tick,tx,408,tx,415);text(key+'ticktext'+tick,tx-30,420,60,tick.toFixed(1),20,false,C.muted,'center');}
- text(key+'delta',x,482,472,'绝对增量 +'+m.absolute_delta.toFixed(4)+'  ｜  相对提升 '+m.relative_change_percent.toFixed(2)+'%',20,true,C.green);
+ text(key+'delta',x,482,472,'Absolute +'+m.absolute_delta.toFixed(4)+'  |  Relative +'+m.relative_change_percent.toFixed(2)+'%',20,true,C.green);
 }
-text('foot',48,535,1024,'统一坐标范围 0—1；数值为同一测试集上逐查询指标的平均值。',20,false,C.muted);
+text('foot',48,535,1024,'Both axes use 0–1. Values are mean per-query metrics on the same test set.',20,false,C.muted);
 fs.writeFileSync(path.join(__dirname,'comparison-native-nodes.json'),JSON.stringify({nodes},null,2));
 console.log(nodes.length+' editable chart nodes');
 // A compact SVG is also provided for publication outside Feishu.
 const escape=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-let svg='<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="574" viewBox="0 0 1120 574"><style>text{font-family:"Noto Sans CJK SC","PingFang SC",sans-serif}</style>';
+let svg='<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="574" viewBox="0 0 1120 574"><style>text{font-family:Arial,Helvetica,sans-serif}</style>';
 for(const n of [...nodes].sort((a,b)=>a.z_index-b.z_index)){
  if(n.type==='composite_shape')svg+=`<rect x="${n.x}" y="${n.y}" width="${n.width}" height="${n.height}" fill="${n.style.fill_color}"/>`;
  if(n.type==='connector'){const a=n.connector.start.position,b=n.connector.end.position;svg+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${C.line}" stroke-width="1.5"/>`;}

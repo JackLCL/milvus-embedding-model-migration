@@ -1,17 +1,17 @@
-# 实验结果
+# Recorded Experiment Results
 
-运行：20261001T022531Z
-Collection：scifact_switch_20261001t022531z
-用时：1457.56 秒（含完整模型推理、评测及验证）
+Run: 20261001T022531Z
+Collection: scifact_switch_20261001t022531z
+Duration: 1457.56 seconds, including model inference, evaluation, and validation.
 
-| 版本 | Recall@10 | nDCG@10 |
+| Model | Recall@10 | nDCG@10 |
 |---|---:|---:|
-| BGE-small-en-v1.5 · 384 维 | 0.8362 | 0.7127 |
-| BGE-base-en-v1.5 · 768 维 | 0.8742 | 0.7427 |
+| BGE-small-en-v1.5 · 384 dimensions | 0.8362 | 0.7127 |
+| BGE-base-en-v1.5 · 768 dimensions | 0.8742 | 0.7427 |
 
-在本次评测中，BGE-base-en-v1.5 的 Recall@10 比 BGE-small-en-v1.5 高 3.80 个百分点。结果基于完整 SciFact 语料、固定文本处理方式和索引参数；上线前仍需通过灰度流量评估检索质量与延迟。
+BGE-base-en-v1.5 improves Recall@10 by 3.80 percentage points over BGE-small-en-v1.5 in this evaluation. Results use the complete SciFact corpus with fixed preprocessing and index parameters. Production rollout still requires canary evaluation of retrieval quality and latency.
 
-## 检查
+## Validation checks
 
 - server_is_3_0_2: {"passed": true}
 - full_scifact_test: {"passed": true, "documents": 5183, "queries": 300}
@@ -30,9 +30,9 @@ Collection：scifact_switch_20261001t022531z
 - cleanup_preserves_retrieval: {"passed": true}
 - continuous_real_inference_HTTP: {"passed": true, "requests": 3754, "failures": 0}
 
-## 持续 HTTP 检索（包含模型推理）
+## Continuous HTTP search, including model inference
 
-| 阶段 | 请求数 | 失败 | P95 ms |
+| Phase | Requests | Failures | P95 ms |
 |---|---:|---:|---:|
 | baseline_A | 19 | 0 | 26.14 |
 | add_B | 23 | 0 | 28.28 |
@@ -44,6 +44,6 @@ Collection：scifact_switch_20261001t022531z
 | final_B | 20 | 0 | 71.17 |
 | after_cleanup | 19 | 0 | 546.18 |
 
-延迟包含原文查询的模型推理、排队、HTTP 和 Milvus 检索，不是单独的 Milvus 延迟。两个模型的回填与在线请求共享 CPU 推理资源。本次采用 4 个推理 worker，每个 session 2 线程。
+Latency includes query embedding inference, queueing, HTTP communication, and Milvus search, rather than Milvus search alone. Backfill and online requests share CPU inference resources. This run uses four inference workers with two threads per session.
 
-生产部署需采用请求计数与排空机制，确认旧版本的在途请求已完成，并通过分布式配置发布机制协调各服务实例的版本切换。
+Production deployments need request accounting and draining to confirm that old-version requests have completed, plus distributed configuration rollout to coordinate version changes across service instances.

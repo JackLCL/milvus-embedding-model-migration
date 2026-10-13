@@ -27,7 +27,7 @@
       "height": 58,
       "z_index": 101,
       "text": {
-        "text": "Embedding 模型替换前后的检索效果",
+        "text": "Retrieval quality before and after migration",
         "font_size": 32,
         "font_weight": "bold",
         "text_color": "#1F2329",
@@ -48,7 +48,7 @@
       "height": 36,
       "z_index": 102,
       "text": {
-        "text": "SciFact · 5,183 篇文献 · 300 条测试查询 · 指标越高越好",
+        "text": "SciFact · 5,183 documents · 300 test queries · Higher is better",
         "font_size": 20,
         "font_weight": "regular",
         "text_color": "#646A73",
@@ -87,7 +87,7 @@
       "height": 36,
       "z_index": 104,
       "text": {
-        "text": "bge-small-en-v1.5 · 384 维",
+        "text": "bge-small-en-v1.5 · 384 dims",
         "font_size": 20,
         "font_weight": "regular",
         "text_color": "#5178C6",
@@ -126,7 +126,7 @@
       "height": 36,
       "z_index": 106,
       "text": {
-        "text": "bge-base-en-v1.5 · 768 维",
+        "text": "bge-base-en-v1.5 · 768 dims",
         "font_size": 20,
         "font_weight": "regular",
         "text_color": "#509863",
@@ -475,7 +475,7 @@
       "height": 36,
       "z_index": 117,
       "text": {
-        "text": "绝对增量 +0.0380  ｜  相对提升 4.54%",
+        "text": "Absolute +0.0380  |  Relative +4.54%",
         "font_size": 20,
         "font_weight": "bold",
         "text_color": "#509863",
@@ -824,7 +824,7 @@
       "height": 36,
       "z_index": 128,
       "text": {
-        "text": "绝对增量 +0.0300  ｜  相对提升 4.21%",
+        "text": "Absolute +0.0300  |  Relative +4.21%",
         "font_size": 20,
         "font_weight": "bold",
         "text_color": "#509863",
@@ -845,7 +845,7 @@
       "height": 36,
       "z_index": 129,
       "text": {
-        "text": "统一坐标范围 0—1；数值为同一测试集上逐查询指标的平均值。",
+        "text": "Both axes use 0–1. Values are mean per-query metrics on the same test set.",
         "font_size": 20,
         "font_weight": "regular",
         "text_color": "#646A73",
