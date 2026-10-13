@@ -279,17 +279,11 @@ In this experiment, dropping `vector_a` also removes its associated index. The p
 
 The two-field approach separates historical re-embedding from traffic cutover: backfill and evaluation run while the old version serves queries, and the application switches once the new version is ready. During migration, account for the extra inference work and the storage and runtime resources needed for both vector fields and indexes.
 
-## Results and reproduction
+## Summary
 
-The run ingests and backfills 5,183 documents and evaluates 300 test queries. Record-by-record checks confirm that IDs, titles, source text, and existing vectors remain unchanged while all new embeddings are populated.
+Milvus 3.0 supports a staged model migration through online field additions and removals. The old model keeps serving while new embeddings are backfilled and evaluated. Switch the query model and vector field together, retain and update the old vectors during the rollback window, and drop the old field once rollback is no longer needed.
 
-All 16 checks pass, covering backfill integrity, cutover and rollback, updates to both vector representations during the observation period, field deletion, and inserts after cleanup. The continuous client sends 3,754 HTTP search requests, each including embedding inference, with no recorded failures. A separate set of 30 requests validates mixed-version routing.
-
-Validation covers a single-process migration workflow under low concurrency, not a real-user A/B test or cluster-failure testing. The corpus remains fixed during evaluation. Incremental-update checks use separate probe records that are removed afterward to avoid changing the model comparison.
-
-The [GitHub repository](https://github.com/JackLCL/milvus-embedding-model-migration) contains pinned dependencies, Docker Compose configuration, dataset download logic, the complete experiment, per-query results, the run summary, and diagram sources. Follow [README.md](README.md) to reproduce the workflow. The script creates a separate test collection and does not modify existing application collections.
-
-Metrics reflect FastEmbed's quantized ONNX models, the fixed text-processing policy, and the HNSW settings used in this run. Re-evaluate on your own application data before deployment.
+In this SciFact experiment, switching to BGE-base-en-v1.5 increased Recall@10 from 0.8362 to 0.8742. The complete code and reproduction instructions are available in the [GitHub repository](https://github.com/JackLCL/milvus-embedding-model-migration).
 
 ## References
 
