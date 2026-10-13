@@ -4,7 +4,7 @@ Embedding 模型是影响 RAG、多模态搜索、推荐系统等 AI 应用召�
 
 在最新的 Milvus3.0 版本中，得益于灵活的加减列、默认值和空值的能力，使新旧模型的向量能够在同一 Collection 中共存，系统可以在旧模型继续服务的同时完成新向量回填和效果验证，再逐步切换流量，最后清理旧字段，完成Embeding 模型的平滑切换。
 
-本文以一个知识库系统为例，将其中的 Embeding 模型从 BGE-small-en-v1.5 切换至 BGE-base-en-v1.5。图 1 展示了切换过程中各个阶段的数据变化与回滚路径，后续章节按此流程展开。以下实验基于 Milvus 3.0.2、PyMilvus 3.0.2 和公开数据集 SciFact，覆盖数据入库、向量回填、检索评测、切换、回滚及旧字段清理。文末提供完整代码和运行结果。
+本文以一个知识库系统为例，将其中的 Embeding 模型从 BGE-small-en-v1.5 切换至 BGE-base-en-v1.5。图 1 展示了切换过程中各个阶段的数据变化与回滚路径，后续章节按此流程展开。以下实验基于 Milvus 3.0.2、PyMilvus 3.0.2 和公开数据集 SciFact，覆盖数据入库、向量回填、检索评测、切换、回滚及旧字段清理。
 
 ![Embedding 模型切换六阶段总览](diagrams/native-overview-feishu.jpg)
 
@@ -25,7 +25,7 @@ Embedding 模型是影响 RAG、多模态搜索、推荐系统等 AI 应用召�
 
 本例选用两个支持 CPU 推理且输出维度不同的模型，以验证不同维度之间的迁移流程。实际模型选型应以目标业务的评测结果为依据；使用其他模型时，还需相应调整向量维度、文本预处理和索引配置。
 
-准备可连接的 Milvus 3.0.2 实例，下载并解压文末代码包后，执行以下命令。示例使用本机地址 `localhost:19530`，连接其他实例时替换 `--uri` 参数：
+准备可连接的 Milvus 3.0.2 实例，下载或克隆本仓库后，执行以下命令。示例使用本机地址 `localhost:19530`，连接其他实例时替换 `--uri` 参数：
 
 ```shell
 uv venv --python 3.12 .venv
@@ -34,7 +34,7 @@ HF_HUB_DISABLE_XET=1 .venv/bin/python run_public.py \
   --uri http://localhost:19530 --model-cache ./models
 ```
 
-脚本自动下载 SciFact，创建带时间戳的独立 Collection，并执行入库、回填、评测、切换和回滚。已有 Milvus 实例可通过参数指定连接地址；新建环境可使用附件中的 Docker Compose 配置部署 Milvus 3.0.2。
+脚本自动下载 SciFact，创建带时间戳的独立 Collection，并执行入库、回填、评测、切换和回滚。已有 Milvus 实例可通过参数指定连接地址；新建环境可使用仓库中的 Docker Compose 配置部署 Milvus 3.0.2。
 
 首先初始化 Milvus 客户端和两个 FastEmbed 模型。代码中，`model_a`、`vector_a` 和路由值 `"A"` 对应 BGE-small-en-v1.5；`model_b`、`vector_b` 和路由值 `"B"` 对应 BGE-base-en-v1.5。后续示例共用此处的 `client` 与 Collection 名称 `name`：
 
@@ -193,9 +193,7 @@ results_b = client.search(
 )
 ```
 
-使用 BGE-small-en-v1.5 编码同一组查询并检索 `vector_a`，即可得到替换前的评测结果。代码包保存了逐查询的相关文献标注、召回文献 ID 和指标，可据此分析具体查询的改善与退化。
-
-### 替换前后的效果对比
+使用 BGE-small-en-v1.5 编码同一组查询并检索 `vector_a`，即可得到替换前的评测结果。代码包保存了逐查询的相关文献标注、召回文献 ID 和指标，可据此分析具体查询的改善与退化。下图是替换前后的效果对比：
 
 ![Embedding 模型替换前后的检索效果](diagrams/comparison.svg)
 
@@ -289,7 +287,7 @@ print(client.list_indexes(name))
 
 验证范围为单进程、低并发下的迁移流程，不包含真实用户 A/B 实验或集群故障测试。公开语料在评测期间保持不变；增量写入验证使用独立测试记录，并在验证结束后删除，以避免影响模型对比结果。
 
-文末代码包包含固定依赖、Docker Compose 配置、数据下载逻辑、完整实验脚本、逐查询检索结果、运行摘要和图表源文件。按 `README.md` 可复现上述流程。脚本创建独立的测试 Collection，不修改已有业务集合。
+[GitHub 代码仓库](https://github.com/JackLCL/milvus-embedding-model-migration) 包含固定依赖、Docker Compose 配置、数据下载逻辑、完整实验脚本、逐查询检索结果、运行摘要和图表源文件。按 `README.md` 可复现上述流程。脚本创建独立的测试 Collection，不修改已有业务集合。
 
 实验采用 FastEmbed 的量化 ONNX 实现、固定文本处理方式和 HNSW 参数。指标仅反映本次数据与配置下的表现；实际部署应结合目标业务数据重新评测。
 
