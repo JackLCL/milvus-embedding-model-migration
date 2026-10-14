@@ -9,13 +9,19 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import numpy as np
-from fastembed import TextEmbedding
+import torch
+import importlib.metadata
+from pymilvus.model.dense import SentenceTransformerEmbeddingFunction
 from pymilvus import MilvusClient, DataType
 
 ROOT=Path(__file__).resolve().parent
 MODELS={'A':'BAAI/bge-small-en-v1.5','B':'BAAI/bge-base-en-v1.5'}
 FIELDS={'A':'vector_a','B':'vector_b'}
 DIMS={'A':384,'B':768}
+MODEL_REVISIONS={'A': '5c38ec7c405ec4b44b94cc5a9bb96e735b38267a', 'B': 'a5beb1e3e68b9ab74eb54cfd186867f64f240e1a'}
+WORKERS=4
+TORCH_THREADS=2
+MODEL_BATCH_SIZE=8
 DATA_URL='https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip'
 PREFIX='Represent this sentence for searching relevant passages: '
 
@@ -49,8 +55,8 @@ class Lab:
         self.name='scifact_switch_'+self.run.lower()
         self.c=MilvusClient(uri=uri,timeout=60)
         self.checks={};self.stage='prepare';self.route='A';self.ready={'A':False,'B':False}
-        self.route_lock=threading.Lock();self.locks={v:[threading.Lock() for _ in range(4)] for v in MODELS}
-        self.pool=ThreadPoolExecutor(max_workers=4)
+        self.route_lock=threading.Lock();self.locks={v:[threading.Lock() for _ in range(WORKERS)] for v in MODELS}
+        self.pool=ThreadPoolExecutor(max_workers=WORKERS)
         self.stop=threading.Event();self.samples=[];self.reader_thread=None;self.server=None
         self.start=time.monotonic();self.counts={};self.expected={v:{} for v in MODELS}
         self.events=(self.out/'events.jsonl').open('a',buffering=1)
@@ -62,13 +68,16 @@ class Lab:
         if not passed:raise AssertionError(name)
     def phase(self,name):self.stage=name;self.event('stage',name=name)
     def encode(self,v,texts,query=False):
-        values=[PREFIX+t for t in texts] if query else texts
+        # Query instructions are applied once by encode_queries().
+        values=list(texts)
         def shard(i,chunk):
             with self.locks[v][i]:
-                return [x.tolist() for x in self.models[v][i].embed(chunk,batch_size=8)]
-        if len(values)<4:return shard(0,values)
-        size=math.ceil(len(values)/4)
-        futures=[self.pool.submit(shard,i,values[i*size:(i+1)*size]) for i in range(4) if values[i*size:(i+1)*size]]
+                model=self.models[v][i]
+                vectors=model.encode_queries(chunk) if query else model.encode_documents(chunk)
+                return [x.tolist() for x in vectors]
+        if len(values)<WORKERS:return shard(0,values)
+        size=math.ceil(len(values)/WORKERS)
+        futures=[self.pool.submit(shard,i,values[i*size:(i+1)*size]) for i in range(WORKERS) if values[i*size:(i+1)*size]]
         return [x for f in futures for x in f.result()]
     def index(self,field):
         p=self.c.prepare_index_params()
@@ -136,15 +145,51 @@ class Lab:
         metrics={'queries':len(self.qids),'recall_at_10':statistics.mean(recalls),'ndcg_at_10':statistics.mean(ndcgs)}
         save(self.out/f'retrieval_{v}.json',results);save(self.out/f'metrics_{v}.json',metrics)
         self.event('evaluation',version=v,**metrics);return metrics
+    def save_model_provenance(self):
+        packages={p:importlib.metadata.version(p) for p in
+                  ['pymilvus','pymilvus.model','sentence-transformers','transformers','torch']}
+        models=[]
+        for v,model_name in MODELS.items():
+            snapshot=Path(self.cache)/('models--'+model_name.replace('/','--'))/'snapshots'/MODEL_REVISIONS[v]
+            files=[]
+            for path in sorted(snapshot.rglob('*')):
+                if path.is_file():
+                    files.append({'file':path.relative_to(snapshot).as_posix(),
+                                  'sha256':hashlib.file_digest(path.open('rb'),'sha256').hexdigest(),
+                                  'bytes':path.stat().st_size})
+            models.append({'version':v,'repository':model_name,'revision':MODEL_REVISIONS[v],
+                           'dimension':DIMS[v],'dtype':str(next(self.models[v][0].model.parameters()).dtype),
+                           'max_seq_length':512,'pooling':self.models[v][0].model[1].get_config_dict(),'files':files})
+        save(self.out/'model-provenance.json',{
+            'python':platform.python_version(),'packages':packages,
+            'embedding_library':'pymilvus.model.SentenceTransformerEmbeddingFunction',
+            'backend':'PyTorch','device':'cpu','quantized':False,
+            'workers':WORKERS,'torch_threads':TORCH_THREADS,'model_batch_size':MODEL_BATCH_SIZE,
+            'normalize_embeddings':True,'query_instruction':PREFIX,'doc_instruction':'','models':models,
+        })
     def run_all(self):
         self.check('server_is_3_0_2',self.c.get_server_version()=='3.0.2')
         docs,self.queries,self.qrels=load_data();self.qids=sorted(self.qrels,key=int)
         self.check('full_scifact_test',len(docs)==5183 and len(self.qids)==300,documents=len(docs),queries=len(self.qids))
         self.source={r['_id']:{'id':r['_id'],'title':r['title'],'text':r['title']+'\n'+r['text']} for r in docs}
         save(self.out/'provenance.json',{'dataset':DATA_URL,'dataset_sha256':hashlib.file_digest((ROOT/'artifacts/scifact.zip').open('rb'),'sha256').hexdigest(),
-            'collection':self.name,'uri':self.uri,'models':MODELS,'dimensions':DIMS,'query_prefix':PREFIX,'python':platform.python_version(),
+            'collection':self.name,'uri':self.uri,'models':MODELS,'model_revisions':MODEL_REVISIONS,'embedding_library':'pymilvus.model','dimensions':DIMS,'query_prefix':PREFIX,'python':platform.python_version(),
             'documents':len(docs),'queries':len(self.qids),'text_policy':'title + newline + abstract; one document per entity; model truncates at 512 tokens; no second chunking'})
-        self.models={v:[TextEmbedding(model_name=m,cache_dir=self.cache,threads=2) for _ in range(4)] for v,m in MODELS.items()}
+        torch.set_num_threads(TORCH_THREADS)
+        torch.set_num_interop_threads(1)
+        self.models={}
+        for v,model_name in MODELS.items():
+            self.models[v]=[]
+            for _ in range(WORKERS):
+                model=SentenceTransformerEmbeddingFunction(
+                    model_name=model_name,device='cpu',batch_size=MODEL_BATCH_SIZE,
+                    query_instruction=PREFIX,doc_instruction='',normalize_embeddings=True,
+                    cache_folder=self.cache,revision=MODEL_REVISIONS[v],
+                )
+                model.model.max_seq_length=512
+                assert model.dim==DIMS[v]
+                self.models[v].append(model)
+        self.save_model_provenance()
         schema=self.c.create_schema(auto_id=False,enable_dynamic_field=False)
         schema.add_field('id',DataType.VARCHAR,max_length=64,is_primary=True)
         schema.add_field('title',DataType.VARCHAR,max_length=2048)
@@ -237,8 +282,8 @@ class Lab:
             self.check(v+'_latest_update_searchable',any(h['id']==probe['id'] for h in r['hits']))
         self.c.delete(self.name,ids=[probe['id']]);self.check('probe_deleted',not self.c.get(self.name,ids=[probe['id']],consistency_level='Strong'))
         self.phase('final_B');self.post('/route',{'version':'B'});time.sleep(6)
-        # Wait for all active A inference by acquiring its lock, then use the
-        # measured local requests' completion before retiring A in this bounded lab.
+        # This low-concurrency lab uses a fixed observation interval.
+        # Production deployments must explicitly drain old-version requests.
         self.ready['A']=False
         self.phase('drop_A');self.c.drop_collection_field(self.name,field_name='vector_a',timeout=120)
         final=self.c.describe_collection(self.name);save(self.out/'schema_B.json',final)
@@ -264,7 +309,7 @@ class Lab:
         self.pool.shutdown();self.c.close();self.events.close();return result['success']
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--uri',default='http://localhost:19530');p.add_argument('--port',type=int,default=8080);p.add_argument('--model-cache',default=str(ROOT.parent/'models'));args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--uri',default='http://localhost:19530');p.add_argument('--port',type=int,default=8080);p.add_argument('--model-cache',default=str(ROOT/'models'));args=p.parse_args()
     lab=Lab(args.uri,args.port,args.model_cache);error=None
     try:lab.run_all()
     except Exception:error=traceback.format_exc();print(error,flush=True)

@@ -1,8 +1,8 @@
 {
   "success": true,
   "error": null,
-  "collection": "scifact_switch_20261001t022531z",
-  "elapsed_s": 1457.5598178748041,
+  "collection": "scifact_switch_20261014t071236z",
+  "elapsed_s": 1141.7194320056587,
   "checks": {
     "server_is_3_0_2": {
       "passed": true
@@ -31,7 +31,7 @@
     },
     "wrong_dimension_rejected": {
       "passed": true,
-      "message": "<MilvusException: (code=2000, message=failed to search: failed to search/query delegator 1 for channel by-dev-rootcoord-dml_13_469271701364567204v0: fail to search on QueryNode 1: worker(1) query failed: parser searchRequest failed:  => vector dimension mismatch, expected vector size(byte) 3072, actual 1536. at ../internal/core/src/query/Plan.cpp:183\n: segcore error[segcoreCode=2001])>"
+      "message": "<MilvusException: (code=2000, message=failed to search: failed to search/query delegator 1 for channel by-dev-rootcoord-dml_2_469271701374605664v0: fail to search on QueryNode 1: worker(1) query failed: parser searchRequest failed:  => vector dimension mismatch, expected vector size(byte) 3072, actual 1536. at ../internal/core/src/query/Plan.cpp:183\n: segcore error[segcoreCode=2001])>"
     },
     "canary_routing": {
       "passed": true,
@@ -60,55 +60,55 @@
     },
     "continuous_real_inference_HTTP": {
       "passed": true,
-      "requests": 3754,
+      "requests": 2812,
       "failures": 0
     }
   },
   "http_by_stage": {
     "baseline_A": {
-      "requests": 19,
-      "failures": 0,
-      "p95_ms": 26.14353075623512
-    },
-    "add_B": {
-      "requests": 23,
-      "failures": 0,
-      "p95_ms": 28.275465965270993
-    },
-    "backfill_B_from_milvus_text": {
-      "requests": 3533,
-      "failures": 0,
-      "p95_ms": 50.938363000750535
-    },
-    "audit_and_evaluate_B": {
-      "requests": 101,
-      "failures": 0,
-      "p95_ms": 34.98592786490917
-    },
-    "canary_AB": {
-      "requests": 4,
-      "failures": 0,
-      "p95_ms": 30.92049779370427
-    },
-    "cutover_B": {
-      "requests": 17,
-      "failures": 0,
-      "p95_ms": 62.245561927556984
-    },
-    "rollback_A": {
       "requests": 18,
       "failures": 0,
-      "p95_ms": 31.659607309848067
+      "p95_ms": 43.81193844601512
+    },
+    "add_B": {
+      "requests": 31,
+      "failures": 0,
+      "p95_ms": 44.263821095228195
+    },
+    "backfill_B_from_milvus_text": {
+      "requests": 2600,
+      "failures": 0,
+      "p95_ms": 78.56870377436273
+    },
+    "audit_and_evaluate_B": {
+      "requests": 91,
+      "failures": 0,
+      "p95_ms": 103.72357442975044
+    },
+    "canary_AB": {
+      "requests": 5,
+      "failures": 0,
+      "p95_ms": 78.78978177905083
+    },
+    "cutover_B": {
+      "requests": 16,
+      "failures": 0,
+      "p95_ms": 147.90950203314424
+    },
+    "rollback_A": {
+      "requests": 16,
+      "failures": 0,
+      "p95_ms": 51.705395337194204
     },
     "final_B": {
-      "requests": 20,
+      "requests": 18,
       "failures": 0,
-      "p95_ms": 71.16776080802083
+      "p95_ms": 115.45892069116235
     },
     "after_cleanup": {
-      "requests": 19,
+      "requests": 17,
       "failures": 0,
-      "p95_ms": 546.1845871061016
+      "p95_ms": 707.4893452227095
     }
   },
   "metrics_A": {
@@ -119,6 +119,6 @@
   "metrics_B": {
     "queries": 300,
     "recall_at_10": 0.8742222222222222,
-    "ndcg_at_10": 0.7427062791935646
+    "ndcg_at_10": 0.7403912879186789
   }
 }

@@ -1,19 +1,162 @@
 {
   "python": "3.12.11",
+  "packages": {
+    "pymilvus": "3.0.2",
+    "pymilvus.model": "0.3.4",
+    "sentence-transformers": "6.1.0",
+    "transformers": "5.19.0",
+    "torch": "2.14.1+cpu"
+  },
+  "embedding_library": "pymilvus.model.SentenceTransformerEmbeddingFunction",
+  "backend": "PyTorch",
+  "device": "cpu",
+  "quantized": false,
+  "workers": 4,
+  "torch_threads": 2,
+  "model_batch_size": 8,
+  "normalize_embeddings": true,
+  "query_instruction": "Represent this sentence for searching relevant passages: ",
+  "doc_instruction": "",
   "models": [
     {
-      "repository": "models--qdrant--bge-small-en-v1.5-onnx-q",
-      "revision": "52398278842ec682c6f32300af41344b1c0b0bb2",
-      "file": "model_optimized.onnx",
-      "sha256": "51f1bd0addd6e859e42c2c8021a5e5461385bb676a649f4b269aa445449f2431",
-      "bytes": 66465124
+      "version": "A",
+      "repository": "BAAI/bge-small-en-v1.5",
+      "revision": "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a",
+      "dimension": 384,
+      "dtype": "torch.float32",
+      "max_seq_length": 512,
+      "pooling": {
+        "embedding_dimension": 384,
+        "pooling_mode": "cls",
+        "include_prompt": true
+      },
+      "files": [
+        {
+          "file": "1_Pooling/config.json",
+          "sha256": "d1caf60c96f5fba2157c0c26b76d80818fad6cf0b8eb5e73ec372ff9818eba5c",
+          "bytes": 190
+        },
+        {
+          "file": "README.md",
+          "sha256": "ddb964361a55c6e5dfca6361615854b260c9c960205d04c7520151aaa1d75837",
+          "bytes": 94783
+        },
+        {
+          "file": "config.json",
+          "sha256": "094f8e891b932f2000c92cfc663bac4c62069f5d8af5b5278c4306aef3084750",
+          "bytes": 743
+        },
+        {
+          "file": "config_sentence_transformers.json",
+          "sha256": "940d5f50db195fa6e5e6a4f122c095f77880de259d74b14a65779ed48bdd7c56",
+          "bytes": 124
+        },
+        {
+          "file": "model.safetensors",
+          "sha256": "3c9f31665447c8911517620762200d2245a2518d6e7208acc78cd9db317e21ad",
+          "bytes": 133466304
+        },
+        {
+          "file": "modules.json",
+          "sha256": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf",
+          "bytes": 349
+        },
+        {
+          "file": "sentence_bert_config.json",
+          "sha256": "84e39fda68ccbff05bfa723ae9c0e70e23e2ec373b76e0f8c6e71af72a693cbf",
+          "bytes": 52
+        },
+        {
+          "file": "special_tokens_map.json",
+          "sha256": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3",
+          "bytes": 125
+        },
+        {
+          "file": "tokenizer.json",
+          "sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+          "bytes": 711396
+        },
+        {
+          "file": "tokenizer_config.json",
+          "sha256": "9261e7d79b44c8195c1cada2b453e55b00aeb81e907a6664974b4d7776172ab3",
+          "bytes": 366
+        },
+        {
+          "file": "vocab.txt",
+          "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+          "bytes": 231508
+        }
+      ]
     },
     {
-      "repository": "models--qdrant--bge-base-en-v1.5-onnx-q",
-      "revision": "738cad1c108e2f23649db9e44b2eab988626493b",
-      "file": "model_optimized.onnx",
-      "sha256": "4e556722bc4f65716c544c8a931f1e90fb3f866e5741fd93a96f051d673339c7",
-      "bytes": 217824172
+      "version": "B",
+      "repository": "BAAI/bge-base-en-v1.5",
+      "revision": "a5beb1e3e68b9ab74eb54cfd186867f64f240e1a",
+      "dimension": 768,
+      "dtype": "torch.float32",
+      "max_seq_length": 512,
+      "pooling": {
+        "embedding_dimension": 768,
+        "pooling_mode": "cls",
+        "include_prompt": true
+      },
+      "files": [
+        {
+          "file": "1_Pooling/config.json",
+          "sha256": "c9bef85e8bbf4b2eab4941b3fb62bd33f88686748b478f2e264d256472d9643b",
+          "bytes": 190
+        },
+        {
+          "file": "README.md",
+          "sha256": "fd29e6117a8c2bc83f8eafb73f261d35341702dcd95c9cc0b34f5be75afa8231",
+          "bytes": 94551
+        },
+        {
+          "file": "config.json",
+          "sha256": "bc00af31a4a31b74040d73370aa83b62da34c90b75eb77bfa7db039d90abd591",
+          "bytes": 777
+        },
+        {
+          "file": "config_sentence_transformers.json",
+          "sha256": "940d5f50db195fa6e5e6a4f122c095f77880de259d74b14a65779ed48bdd7c56",
+          "bytes": 124
+        },
+        {
+          "file": "model.safetensors",
+          "sha256": "c7c1988aae201f80cf91a5dbbd5866409503b89dcaba877ca6dba7dd0a5167d7",
+          "bytes": 437955512
+        },
+        {
+          "file": "modules.json",
+          "sha256": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf",
+          "bytes": 349
+        },
+        {
+          "file": "sentence_bert_config.json",
+          "sha256": "84e39fda68ccbff05bfa723ae9c0e70e23e2ec373b76e0f8c6e71af72a693cbf",
+          "bytes": 52
+        },
+        {
+          "file": "special_tokens_map.json",
+          "sha256": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3",
+          "bytes": 125
+        },
+        {
+          "file": "tokenizer.json",
+          "sha256": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+          "bytes": 711396
+        },
+        {
+          "file": "tokenizer_config.json",
+          "sha256": "9261e7d79b44c8195c1cada2b453e55b00aeb81e907a6664974b4d7776172ab3",
+          "bytes": 366
+        },
+        {
+          "file": "vocab.txt",
+          "sha256": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+          "bytes": 231508
+        }
+      ]
     }
   ]
 }

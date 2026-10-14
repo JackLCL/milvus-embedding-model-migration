@@ -1,12 +1,16 @@
 {
-  "run_id": "20261013T092650Z",
+  "run_id": "20261014T071236Z",
   "success": true,
   "server_version": "3.0.2",
   "pymilvus_version": "3.0.2",
-  "source_sha256": "fe2c97c520be07e2a52d1d40073fca4f9232116d6dc70ad50288c29ccf300973",
-  "fresh_checkout_without_artifacts_directory": true,
+  "source_sha256": "be312ec619749e9ab7b2d3b4696f565a9ddc5e75febbbf25ed400ac52e0a2bfa",
+  "embedding_library": "pymilvus.model",
+  "embedding_library_version": "0.3.4",
+  "backend": "PyTorch",
+  "device": "cpu",
+  "precision": "float32",
   "fresh_dependency_install_verified": true,
-  "reused_model_cache_matches_recorded_sha256": true,
+  "model_revisions_pinned": true,
   "documents": 5183,
   "queries": 300,
   "checks": {
@@ -29,7 +33,7 @@
   },
   "continuous_http": {
     "passed": true,
-    "requests": 3798,
+    "requests": 2812,
     "failures": 0
   },
   "canary_requests": 30,
@@ -42,15 +46,16 @@
   "metrics_B": {
     "queries": 300,
     "recall_at_10": 0.8742222222222222,
-    "ndcg_at_10": 0.7427062791935646
+    "ndcg_at_10": 0.7403912879186789
   },
   "metrics_independently_verified_against_official_qrels": true,
+  "query_instruction_applied_once": true,
   "article_snippets": {
     "success": true,
     "python_blocks": 10,
     "documents": 64,
     "queries": 20,
-    "scope": "All Python snippets, with an isolated endpoint, unique collection name, a 64-document SciFact subset and 20 queries. Shell HTTP routing is exercised by the complete experiment."
+    "environment": "Separate fresh environment installed with the published CPU setup commands and lock file."
   },
-  "scope": "Single-process, low-concurrency workflow on a running Milvus 3.0.2 instance. Model weight cache reused; complete dataset downloaded in the fresh checkout. The full run used an existing environment matching every pinned dependency; a separate fresh environment installation and imports were also verified. No cluster-failure or production request-draining validation."
+  "scope": "Single-process, low-concurrency workflow against an existing Milvus 3.0.2 instance. Cached weights were downloaded from the pinned original BAAI repositories. No cluster-failure or production request-draining validation."
 }

@@ -12,6 +12,17 @@
       "dimension": 768
     }
   },
+  "source_files": [
+    "recorded-results/retrieval_A.json",
+    "recorded-results/retrieval_B.json"
+  ],
+  "inference": {
+    "library": "pymilvus.model",
+    "library_version": "0.3.4",
+    "backend": "PyTorch",
+    "precision": "float32",
+    "device": "cpu"
+  },
   "metrics": {
     "recall_at_10": {
       "before": 0.8362222222222222,
@@ -21,9 +32,9 @@
     },
     "ndcg_at_10": {
       "before": 0.7127069247605036,
-      "after": 0.7427062791935646,
-      "absolute_delta": 0.02999935443306101,
-      "relative_change_percent": 4.209213267170362
+      "after": 0.7403912879186789,
+      "absolute_delta": 0.02768436315817535,
+      "relative_change_percent": 3.8843965445513726
     }
   },
   "query_outcomes": {
@@ -37,9 +48,5 @@
       "unchanged": 196,
       "declined": 39
     }
-  },
-  "source_files": [
-    "recorded-results/retrieval_A.json",
-    "recorded-results/retrieval_B.json"
-  ]
+  }
 }

@@ -20,7 +20,7 @@ This repository does not distribute the full corpus or dataset archive. `recorde
 - [BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5): 384 dimensions.
 - [BAAI/bge-base-en-v1.5](https://huggingface.co/BAAI/bge-base-en-v1.5): 768 dimensions.
 
-The BAAI model pages list the MIT License. This experiment uses Qdrant-distributed quantized ONNX files through FastEmbed 0.7.4. Model weights are not included. The actual download repositories, revisions, file sizes, and SHA-256 hashes are recorded in `recorded-results/model-provenance.json`.
+The BAAI model pages list the MIT License. This experiment loads the original BAAI weights through the [Milvus model library](https://github.com/milvus-io/milvus-model), using its Sentence Transformers integration with PyTorch FP32 inference on CPU. Model weights are not included. The pinned model revisions, downloaded file hashes, and inference configuration are recorded in `recorded-results/model-provenance.json`. The Milvus model library is distributed under Apache-2.0; its dependencies retain their respective licenses.
 
 ## Dependencies and containers
 

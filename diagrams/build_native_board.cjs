@@ -1,4 +1,5 @@
 const fs=require('fs'),path=require('path');
+const evaluation=JSON.parse(fs.readFileSync(path.join(__dirname,'comparison-metrics.json'),'utf8'));
 const C={ink:'#1F2329',muted:'#646A73',blue:'#5178C6',blueBg:'#F0F4FC',green:'#509863',greenBg:'#DFF5E5',amber:'#D4B45B',amberBg:'#FEF1CE',red:'#D25D5A',redBg:'#FEE3E2',line:'#BBBFC4',white:'#FFFFFF'};
 let nodes=[],z=0;
 function shape(id,x,y,w,h,fill=C.white,border=C.line,type='round_rect',label='',size=20){
@@ -46,7 +47,7 @@ text('encodeB',850,382,296,'↓  BGE-base encoding  ↓',20,true,C.green,'center
 table('afterRows',850,430,[78,109,109],[['id','vector_a','vector_b'],['r1','✓','✓'],['r2','✓','✓']],{'1,1':{fill:C.blueBg,color:C.blue},'2,1':{fill:C.blueBg,color:C.blue},'1,2':{fill:C.greenBg,color:C.green},'2,2':{fill:C.greenBg,color:C.green}},42);
 // 4: explicit checks plus the observed Recall@10 values, drawn to the same scale.
 text('checks',84,700,296,'✓ Data   ✓ Index   ✓ Quality',18,false,C.green,'center');
-table('metrics',84,782,[148,148],[['Model','Recall@10'],['BGE-small','0.8362'],['BGE-base','0.8742']],{1:{fill:C.blueBg,color:C.blue},2:{fill:C.greenBg,color:C.green}},48);
+table('metrics',84,782,[148,148],[['Model','Recall@10'],['BGE-small',evaluation.metrics.recall_at_10.before.toFixed(4)],['BGE-base',evaluation.metrics.recall_at_10.after.toFixed(4)]],{1:{fill:C.blueBg,color:C.blue},2:{fill:C.greenBg,color:C.green}},48);
 // 5: a query selects a complete model + field pair; old route remains for rollback.
 shape('query',470,800,64,58,C.white,C.line,'bubble','Query',17);
 shape('routeA',552,726,106,54,C.blueBg,C.blue,'round_rect','BGE-small',18);

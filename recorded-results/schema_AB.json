@@ -1,5 +1,5 @@
 {
-  "collection_name": "scifact_switch_20261001t022531z",
+  "collection_name": "scifact_switch_20261014t071236z",
   "auto_id": false,
   "num_shards": 1,
   "description": "",
@@ -54,7 +54,7 @@
   ],
   "functions": [],
   "aliases": [],
-  "collection_id": 469271701364567204,
+  "collection_id": 469271701374605664,
   "consistency_level": 0,
   "consistency_level_name": "Strong",
   "properties": {
@@ -66,6 +66,6 @@
   "enable_dynamic_field": false,
   "enable_namespace": false,
   "schema_version": 1,
-  "created_timestamp": 469453120749961234,
-  "update_timestamp": 469453221360828434
+  "created_timestamp": 469752077841858577,
+  "update_timestamp": 469752148725596179
 }

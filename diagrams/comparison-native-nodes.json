@@ -594,7 +594,7 @@
       "type": "composite_shape",
       "x": 708,
       "y": 340,
-      "width": 203.5015204990367,
+      "width": 202.86721288971802,
       "height": 30,
       "z_index": 23,
       "composite_shape": {
@@ -610,13 +610,13 @@
     {
       "id": "ndcg_at_10Bvalue",
       "type": "text_shape",
-      "x": 921.5015204990367,
+      "x": 920.8672128897181,
       "y": 332,
       "width": 100,
       "height": 36,
       "z_index": 124,
       "text": {
-        "text": "0.7427",
+        "text": "0.7404",
         "font_size": 20,
         "font_weight": "regular",
         "text_color": "#1F2329",
@@ -824,7 +824,7 @@
       "height": 36,
       "z_index": 128,
       "text": {
-        "text": "Absolute +0.0300  |  Relative +4.21%",
+        "text": "Absolute +0.0277  |  Relative +3.88%",
         "font_size": 20,
         "font_weight": "bold",
         "text_color": "#509863",
